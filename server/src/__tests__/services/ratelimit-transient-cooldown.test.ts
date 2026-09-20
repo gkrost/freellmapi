@@ -92,4 +92,22 @@ describe('getTransientCooldownMs', () => {
       getCooldownDurationForLimit('groq', `transient-ceiling-${id}`, id, { rpd: null, tpd: null }, undefined, { quotaSignal: false }),
     ).toBe(DEFAULT_TRANSIENT_COOLDOWN_MS);
   });
+
+  it('applies a configured 0 end-to-end: a transport failure benches for 0ms', () => {
+    setSetting(TRANSIENT_COOLDOWN_SETTING, '0');
+    const id = nextKeyId();
+    expect(
+      getCooldownDurationForLimit('groq', `transient-zero-${id}`, id, { rpd: null, tpd: null }, undefined, { quotaSignal: false }),
+    ).toBe(0);
+  });
+
+  it('still honors an upstream Retry-After when the configured base is 0', () => {
+    // The docs promise "0 disables the self-chosen bench" — not "ignore the
+    // provider": retryAfterMs > base (0) wins, same as against the 90s default.
+    setSetting(TRANSIENT_COOLDOWN_SETTING, '0');
+    const id = nextKeyId();
+    expect(
+      getCooldownDurationForLimit('groq', `transient-retryafter-${id}`, id, { rpd: null, tpd: null }, 30_000, { quotaSignal: false }),
+    ).toBe(30_000);
+  });
 });
