@@ -945,9 +945,9 @@ function clearCooldownHits(platform: string, modelId: string, keyId: number): vo
 // getFallbackTimeBudgetMs (lib/fallback-loop.ts) and providerTimeoutMs
 // (lib/provider-timeout.ts). Deliberately NOT run through capCooldownMs: the
 // operator ceiling (routing_cooldown_ceiling_ms) only ever shortens a bench, and
-// 90s is already below its 1-minute floor in the default case, so capping it
-// would be a no-op unless an operator sets both knobs — direct configuration of
-// this value is the more legible way to change it.
+// only bites when an operator has set that ceiling below this value (unset by
+// default) — direct configuration of this value is the more legible way to
+// change it.
 const TRANSIENT_COOLDOWN_MS = 90 * 1000;
 const TRANSIENT_COOLDOWN_SETTING = 'transient_cooldown_ms';
 
